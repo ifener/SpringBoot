@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wey.mybatis.mapper.PermissionMapper">
+
+<resultMap id="permissionMap" type="com.wey.pojo.auth.Permission">
+        <id property="id" column="ID"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="url" column="url"/>
+        <collection property="roles" ofType="com.wey.pojo.auth.Role">
+            <result column="role_name" property="roleName"/>
+        </collection>
+
+    </resultMap>
+    
+<select id="findAll"  resultType="com.wey.pojo.auth.Permission">
+   SELECT * from permission;
+</select>
+
+<select id="findAllPermission" resultMap="permissionMap">
+        SELECT p.*,R.ROLE_NAME FROM
+        PERMISSION p 
+        LEFT JOIN ROLE_PERMISSIONS RP ON P.ID=RP.PERMISSIONS_ID 
+        LEFT JOIN ROLE R ON R.ID=RP.ROLE_ID
+</select>
+
+ <select id="findByAdminUserId" parameterType="int" resultType="com.wey.pojo.auth.Permission">
+        SELECT p.*
+        FROM MEMBER M
+        LEFT JOIN MEMBER_ROLES MR ON MR.MEMBER_ID=M.ID 
+        LEFT JOIN ROLE R ON R.ID=MR.ROLES_ID
+        LEFT JOIN ROLE_PERMISSIONS RP ON RP.ROLE_ID=R.ID
+        LEFT JOIN PERMISSION P ON P.ID=RP.PERMISSIONS_ID
+        WHERE M.id=#{userId}
+ </select>
+ </mapper>
